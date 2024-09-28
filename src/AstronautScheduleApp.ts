@@ -52,6 +52,7 @@ export class AstronautScheduleApp {
                     this.scheduleManager.viewTasks();
                 } else if (input.startsWith("Edit Task")) {
                     this.handleEditTask(input);
+                    return; // Don't continue to display menu
                 } else if (input.startsWith("Mark Task Completed")) {
                     this.handleMarkTaskCompleted(input);
                 } else if (input.startsWith("View Tasks Priority")) {
@@ -93,27 +94,82 @@ export class AstronautScheduleApp {
     private editTask(description: string): void {
         const task = this.scheduleManager.getTask(description);
         if (!task) {
-            throw new Error("Task not found.");
+            console.log("Task not found.");
+            this.displayMenu();
+            this.processUserInput();
+            return;
         }
-
-        this.rl.question(`Enter new description (current: ${task.description}): `, (newDescription) => {
-            this.rl.question(`Enter new start time (current: ${task.startTime}): `, (newStartTime) => {
-                this.rl.question(`Enter new end time (current: ${task.endTime}): `, (newEndTime) => {
-                    this.rl.question(`Enter new priority (current: ${task.priority}): `, (newPriority) => {
-                        const updatedTask = TaskFactory.createTask(
-                            newDescription || task.description,
-                            newStartTime || task.startTime,
-                            newEndTime || task.endTime,
-                            newPriority || task.priority
-                        );
-                        this.scheduleManager.updateTask(description, updatedTask);
-                        this.observer.update(`Task updated: ${description}`);
-                        this.displayMenu();
-                        this.processUserInput();
+    
+        const promptWithValidation = (question: string, validator: (input: string) => boolean, errorMessage: string): Promise<string> => {
+            return new Promise((resolve) => {
+                const prompt = () => {
+                    this.rl.question(question, (input) => {
+                        if (input === '' || validator(input)) {
+                            resolve(input);
+                        } else {
+                            console.log(errorMessage);
+                            prompt();
+                        }
                     });
-                });
+                };
+                prompt();
             });
-        });
+        };
+    
+        const timeValidator = TaskFactory['isValidTime'];
+        const priorityValidator = TaskFactory['isValidPriority'];
+    
+        (async () => {
+            let newDescription = await promptWithValidation(
+                `Enter new description (current: ${task.description}): `,
+                (input) => input.trim().length > 0,
+                'Description cannot be empty.'
+            );
+            newDescription = newDescription || task.description;
+    
+            let newStartTime = await promptWithValidation(
+                `Enter new start time (current: ${task.startTime}, format HH:MM): `,
+                timeValidator,
+                'Invalid time format. Please use HH:MM format.'
+            );
+            newStartTime = newStartTime || task.startTime;
+    
+            let newEndTime;
+            do {
+                newEndTime = await promptWithValidation(
+                    `Enter new end time (current: ${task.endTime}, format HH:MM): `,
+                    timeValidator,
+                    'Invalid time format. Please use HH:MM format.'
+                );
+                newEndTime = newEndTime || task.endTime;
+    
+                if (newEndTime <= newStartTime) {
+                    console.log('End time must be after start time. Please try again.');
+                }
+            } while (newEndTime <= newStartTime);
+    
+            let newPriority = await promptWithValidation(
+                `Enter new priority (current: ${task.priority}, options: Low, Medium, High): `,
+                priorityValidator,
+                'Invalid priority. Please enter Low, Medium, or High.'
+            );
+            newPriority = newPriority || task.priority;
+    
+            try {
+                const updatedTask = TaskFactory.createTask(newDescription, newStartTime, newEndTime, newPriority);
+                this.scheduleManager.updateTask(description, updatedTask);
+                this.observer.update(`Task updated: ${description}`);
+            } catch (error) {
+                if (error instanceof Error) {
+                    console.error(`Error: ${error.message}`);
+                } else {
+                    console.error('An unknown error occurred');
+                }
+            }
+    
+            this.displayMenu();
+            this.processUserInput();
+        })();
     }
 
     private handleMarkTaskCompleted(input: string): void {
