@@ -18,7 +18,7 @@ The **Astronaut Schedule Organizer** is a console-based task scheduling applicat
 
     ```bash
     git clone https://github.com/sumanthnanis/El-Study-Assignment.git
-    cd astronaut-schedule-organizer
+    cd El-Study-Assignment
     ```
 
 2. **Install dependencies:**
@@ -88,13 +88,12 @@ After starting the application, you will be greeted with the available commands.
 Enter command: Edit Task("Research on Mars surface")
 Enter new description (current: Buy groceries): Buy drinks
 Enter new start time (current: 14:00, format HH:MM): 12:30
-Enter new end time (current: 14:30, format HH:MM): 26:0
-Invalid time format. Please use HH:MM format.
 Enter new end time (current: 14:30, format HH:MM): 12:50
 Enter new priority (current: Medium, options: Low, Medium, High): High
 Observer notification: Task updated: Research on Mars surface
 
-- **Mark Task Completed**: Marks a task as completed by its description.
+  ```
+   **Mark Task Completed**: Marks a task as completed by its description.
   ```bash
   Mark Task Completed("description")
   ```
