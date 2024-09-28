@@ -93,7 +93,7 @@ Enter new priority (current: Medium, options: Low, Medium, High): High
 Observer notification: Task updated: Research on Mars surface
 
   ```
-   **Mark Task Completed**: Marks a task as completed by its description.
+-   **Mark Task Completed**: Marks a task as completed by its description.
   ```bash
   Mark Task Completed("description")
   ```
