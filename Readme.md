@@ -29,15 +29,7 @@ The **Astronaut Schedule Organizer** is a console-based task scheduling applicat
     npm install
     ```
 
-3. **Build the project:**
-
-    Compile the TypeScript code:
-
-    ```bash
-    npm run build
-    ```
-
-4. **Run the application:**
+3. **Run the application:**
 
     Start the application by running:
 
