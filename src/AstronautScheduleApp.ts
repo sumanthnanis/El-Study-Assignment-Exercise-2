@@ -52,7 +52,7 @@ export class AstronautScheduleApp {
                     this.scheduleManager.viewTasks();
                 } else if (input.startsWith("Edit Task")) {
                     this.handleEditTask(input);
-                    return; // Don't continue to display menu
+                    return; 
                 } else if (input.startsWith("Mark Task Completed")) {
                     this.handleMarkTaskCompleted(input);
                 } else if (input.startsWith("View Tasks Priority")) {
@@ -68,8 +68,10 @@ export class AstronautScheduleApp {
                 }
             }
 
-            this.displayMenu();
-            this.processUserInput();
+            if (!input.startsWith("Edit Task")) {
+                this.displayMenu();
+                this.processUserInput();
+            }
         });
     }
 
@@ -157,6 +159,11 @@ export class AstronautScheduleApp {
     
             try {
                 const updatedTask = TaskFactory.createTask(newDescription, newStartTime, newEndTime, newPriority);
+                if (this.scheduleManager.isTaskConflict(updatedTask) && updatedTask.description !== description) {
+                    console.log("The updated task conflicts with an existing task. Please choose different times.");
+                    this.editTask(description);
+                    return;
+                }
                 this.scheduleManager.updateTask(description, updatedTask);
                 this.observer.update(`Task updated: ${description}`);
             } catch (error) {
