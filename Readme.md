@@ -18,7 +18,7 @@ The **Astronaut Schedule Organizer** is a console-based task scheduling applicat
 
     ```bash
     git clone https://github.com/sumanthnanis/El-Study-Assignment.git
-    cd astronaut-schedule-organizer
+    cd El-Study-Assignment
     ```
 
 2. **Install dependencies:**
